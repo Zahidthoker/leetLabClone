@@ -19,4 +19,23 @@ const isLoggedIn =async (req, res, next)=>{
     }
 }
 
-export {isLoggedIn}
+const isAdmin = async (req, res, next)=>{
+    try {
+        const token = req.cookies.jwt;
+        if(!token){
+            return res.status(404).json(new apiError(404,"Please login first "))
+        }
+        const isMatch = jwt.verify(token,process.env.JWT_SECRET);
+        if(isMatch.role!=='ADMIN'){
+            return res.status(404).json(new apiError(404,"Your are not Authorized for this Action "))
+        }
+        req.user = isMatch;
+        next();
+
+    } catch (error) {
+        return res.status(404).json(new apiError(404),"something went wrong in middleware isAdmin")       
+
+    }
+}
+
+export {isLoggedIn, isAdmin}

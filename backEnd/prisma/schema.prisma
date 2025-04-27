@@ -50,7 +50,7 @@ model Problem {
   hints       String?
   editorial   String?
 
-  testcases        Json
+  testCases        Json
   codeSnippets     Json
   refrenceSolution Json
   createdAt        DateTime @default(now())

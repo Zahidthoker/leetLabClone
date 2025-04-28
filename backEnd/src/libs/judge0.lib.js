@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+import axios from "axios";
+dotenv.config();
+
 export const getJudge0LanguageId = (language)=>{
     const languageMap = {
         "PYTHON":71,
@@ -10,9 +14,8 @@ export const getJudge0LanguageId = (language)=>{
 
 //axios = easier way to make API calls in JavaScript. More features, better error handling than fetch. unlike fetch, axios automatically converts reponse data to JSON. AND automatically handles headers and cookies.
 export const submitBatch = async(submissions)=>{
+    
     const {data} = await axios.post(`${process.env.JUDGE0_API_URL}/submissions/batch?base64_encoded=false`, {submissions})
-
-    console.log("submission Results: ", data);
 
     return data;
 
@@ -28,11 +31,9 @@ export const pollBatchResults = async (token) => {
             }
         })
 
-        console.log("Batch Results: ", data);
         
         const results = data.submissions;
-
-        const isAllDone = results.every((results)=>results.status.id<3)
+        const isAllDone = results.every((results)=>results.status.id!== 1 && results.status.id!==2);
 
         if(isAllDone){
             return results;

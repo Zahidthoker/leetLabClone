@@ -13,7 +13,7 @@ CREATE TABLE "Problem" (
     "constraints" TEXT NOT NULL,
     "hints" TEXT,
     "editorial" TEXT,
-    "testcases" JSONB NOT NULL,
+    "testCases" JSONB NOT NULL,
     "codeSnippets" JSONB NOT NULL,
     "refrenceSolution" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

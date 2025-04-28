@@ -46,7 +46,7 @@ model Problem {
   tags        String[] //["tag1", "tag2", "tag3"]
   userId      String
   examples    Json
-  constraints String
+  constraints String[]
   hints       String?
   editorial   String?
 

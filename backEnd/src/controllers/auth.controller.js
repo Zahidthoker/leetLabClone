@@ -10,7 +10,7 @@ dotenv.config()
 const registerUser = async(req, res)=>{
     console.log("Inside registerUser controller")
     try {
-        const {name, email, password} = req.body;
+        const {name, email, password, role="USER"} = req.body;
     
         const existingUser = await db.user.findUnique({
             where:{email:email}
@@ -27,7 +27,7 @@ const registerUser = async(req, res)=>{
             name,
             email,
             password:hashedPassword,
-            role:userRole.USER
+            role:role
             }
         })
         const token = jwt.sign({id:user.id},process.env.JWT_SECRET,{expiresIn:'7d'})

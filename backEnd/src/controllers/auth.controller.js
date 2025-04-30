@@ -3,7 +3,6 @@ import apiError from "../utils/apiError.js"
 import apiResponse from "../utils/apiResponse.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import { userRole } from "../generated/prisma/index.js"
 import dotenv from "dotenv"
 dotenv.config()
 

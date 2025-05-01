@@ -89,7 +89,7 @@ try {
             return res.status(400).json(new apiError(400, "Problem id is required"));
         }
     
-        const problem = await db.problem.findunique({
+        const problem = await db.problem.findUnique({
             where:{
                 id
             }
@@ -172,7 +172,7 @@ try {
             return res.status(400).json(new apiError(400, "Problem id is required"));
         }
     
-        const problem = await db.problem.findunique({
+        const problem = await db.problem.findUnique({
             where:{
                 id
             }

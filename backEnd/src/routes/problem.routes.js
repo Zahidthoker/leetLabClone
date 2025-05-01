@@ -15,4 +15,4 @@ problemRoutes.route('/update-problem/:id').put(isAdmin, updateProblem)
 problemRoutes.route('/delete-problem/:id').delete(isAdmin, deleteProblem)
 
 problemRoutes.route('/get-all-problems-solved-by-user').get(getAllProblemsSolvedByUser)
-export default problemRoutes 
+export default problemRoutes  

@@ -116,7 +116,7 @@ const updateProblem = async (req, res) => {
     if(!id){
         return res.status(400).json(new apiError(400, "Problem id is required"));
     }
-
+    console.log(id); 
     try {
        for (const [language, solutionCode] of Object.entries(refrenceSolution)){
         const languageId = getJudge0LanguageId(language);
@@ -147,15 +147,24 @@ const updateProblem = async (req, res) => {
        }
        
        const updateProblem = await db.problem.update({
-        where:{
-            id
-        }
-       });
+        where:{id},
+        data:{
+            title,
+            description,
+            difficulty,
+            tags,
+            examples,
+            constraints,
+            testCases,
+            codeSnippets,
+            refrenceSolution,
+        }  
+       }); 
 
        return res.status(200).json({
            success: true,
            message: "Problem updated successfully",
-           data: updatedProblem
+           data: updateProblem
        });
 
     } catch (error) {

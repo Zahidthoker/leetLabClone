@@ -29,7 +29,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  problem Problem[]
+  solvedProblems problemSolved[]
+  problem        Problem[]
+  submission     Submission[]
 }
 
 enum Difficulty {
@@ -56,7 +58,63 @@ model Problem {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  solvedBy   problemSolved[]
+  submission Submission[]
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Submission {
+  id             String   @id @default(uuid())
+  userId         String
+  problemId      String
+  sourceCode     String
+  language       String
+  status         String
+  stdin          String?
+  stdout         String?
+  compiledOutput String?
+  timeTaken      Int
+  memoryUsed     Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  testcases TestCaseResult[]
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem   Problem          @relation(fields: [problemId], references: [id], onDelete: Cascade)
+}
+
+model TestCaseResult {
+  id             String   @id @default(uuid())
+  submissionId   String
+  testCaseIndex  Int
+  passed         Boolean
+  input          String
+  stderr         String?
+  expectedOutput String
+  actualOutput   String?
+  compiledOutput String?
+  status         String
+  timeTaken      Int
+  memoryUsed     Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+}
+
+model problemSolved {
+  id        String   @id @default(uuid())
+  userId    String
+  problemId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId])
 }
 
 // when complete writing model run the command (npx prisma format)

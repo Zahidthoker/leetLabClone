@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import cookiepaser from 'cookie-parser';
 import authRoute from "./routes/auth.route.js"
 import problemRoutes from "./routes/problem.routes.js";
+import executeRouter from "./routes/execute.route.js";
 
 dotenv.config({
     path:'./.env',
@@ -16,6 +17,7 @@ app.use(cookiepaser());
 
 app.use("/api/v1/user", authRoute) 
 app.use("/api/v1/problems", problemRoutes)
+app.use("/api/v1/execute",executeRouter)
 
 app.get('/',(req,res)=>{
     res.send("hello Sir!")

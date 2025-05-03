@@ -7,7 +7,7 @@ import dotenv from "dotenv"
 dotenv.config()
 
 const registerUser = async(req, res)=>{
-    console.log("Inside registerUser controller")
+    // console.log("Inside registerUser controller")
     try {
         const {name, email, password, role="USER"} = req.body;
     
@@ -55,7 +55,7 @@ const registerUser = async(req, res)=>{
 }
 
 const loginUser = async(req, res)=>{
-    console.log("Inside loginUser controller")
+    // console.log("Inside loginUser controller")
     try {
         const {email, password} = req.body;
         const user = await db.user.findUnique({
@@ -88,7 +88,7 @@ const loginUser = async(req, res)=>{
 }
 
 const logoutUser = async(req, res)=>{
-    console.log("Inside logoutUser controller")
+    // console.log("Inside logoutUser controller")
     try {
         const cookieOptions={
             httpOnly:true,
@@ -107,7 +107,7 @@ const logoutUser = async(req, res)=>{
 }
 
 const checkUser = async(req, res)=>{
-    console.log("Inside checkUser controller")
+    // console.log("Inside checkUser controller")
     try {
         const id= req.user.id;
         const user = await db.user.findUnique({

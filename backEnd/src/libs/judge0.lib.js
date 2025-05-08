@@ -11,6 +11,15 @@ export const getJudge0LanguageId = (language)=>{
     return languageMap[language] || 63;
 }
 
+export const getJudge0Language=(id)=>{
+    const languageMap = {
+        71:"PYTHON",
+        62:"JAVA",
+        63:"JAVASCRIPT"
+    }
+
+    return languageMap(id) || "JAVASCRIPT";
+}
 
 //axios = easier way to make API calls in JavaScript. More features, better error handling than fetch. unlike fetch, axios automatically converts reponse data to JSON. AND automatically handles headers and cookies.
 export const submitBatch = async(submissions)=>{
@@ -30,7 +39,6 @@ export const pollBatchResults = async (token) => {
             }
         })
 
-        
         const results = data.submissions;
         const isAllDone = results.every((results)=>results.status.id!== 1 && results.status.id!==2);
 

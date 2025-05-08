@@ -1,4 +1,4 @@
-import { pollBatchResults, submitBatch } from "../libs/judge0.lib.js";
+import { getJudge0LanguageId, getJudge0Language, pollBatchResults, submitBatch } from "../libs/judge0.lib.js";
 import apiError from "../utils/apiError.js";
 
 export const executeCode = async (req, res) => {
@@ -25,6 +25,71 @@ export const executeCode = async (req, res) => {
        const submissionResults = await submitBatch(submissions);
        const token = submissionResults.map((res) => res.token);
        const results = await pollBatchResults(token);
+
+
+       let allPassed = true;
+
+       const detailedResults = results.map((result, i)=>{
+        const stdout = result.stdout?.trim();
+        const expected_output = expectedOutput[i]?.trim();
+        const passed = stdout === expected_output;
+
+        if(!passed) allPassed = false;
+
+        return {
+            testCase:i+1,
+            passed,
+            stdout,
+            expected:expected_output,
+            stderr:result.stderr || null,
+            compile_output: result.compile_output || null,
+            status:result.status.description,
+            memory: result.memory ? `${result.memory} KB`:undefined,
+            time:result.time? `${result.time} sec`:undefined
+        }
+        // console.log(`Testcase #${i+1}`)
+        // console.log(`Input ${stdin[i]}`)
+        // console.log(`Expected_output for testcase ${expected_output}`)
+        // console.log(`Actual output ${stdout}`)
+        // console.log(`Matched: ${passed}`)
+       })
+
+       // store this submission result in db:
+
+       const submission = await db.submission.create({
+        data:{
+            userId,
+        problemId,
+        sourceCode,
+        language:getJudge0Language(languageId),
+        stdin:stdin.join("\n"),
+        stdout:JSON.stringify(detailedResults.map((r)=>r.stdout)),
+        stderr:detailedResults.som((r)=>r.stderr)?JSON.stringify(detailedResults.map((r)=>r.stderr)):null,
+        compiledOutput:detailedResults.som((r)=>r.compile_output)?JSON.stringify(detailedResults.map((r)=>r.compile_output)):null,
+        status:allPassed?"Accepted":"Wrong answer",
+        memory: detailedResults.som((r)=>r.memory)?JSON.stringify(detailedResults.map((r)=>r.memory)):null,
+        time:detailedResults.som((r)=>r.time)?JSON.stringify(detailedResults.map((r)=>r.time)):null,
+        },
+
+       });
+
+       // if all passed == ture mark the problem as solved 
+
+       if(allPassed){
+        await db.problemSolved.upsert({
+            where:{
+                userId_problemId:{
+                    userId, problemId
+                }
+            },
+            update:{},
+            create:{
+                userId, problemId
+            }
+        })
+       }
+
+       
 
        res.status(200).json({
         success:true,

@@ -72,6 +72,7 @@ model Submission {
   status         String
   stdin          String?
   stdout         String?
+  stderr         String?
   compiledOutput String?
   timeTaken      Int
   memoryUsed     Int

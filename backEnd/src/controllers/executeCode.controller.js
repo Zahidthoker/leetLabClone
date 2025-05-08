@@ -1,11 +1,11 @@
 import { getJudge0LanguageId, getJudge0Language, pollBatchResults, submitBatch } from "../libs/judge0.lib.js";
 import apiError from "../utils/apiError.js";
+import {db} from "../libs/db.js"
 
 export const executeCode = async (req, res) => {
 
     const {sourceCode, languageId, stdin, expectedOutput,problemId} = req.body;
-    const {userId} = req.user;
-
+    const {id:userId} = req.user;
     try {
        //validate the stdin 
         
@@ -40,12 +40,13 @@ export const executeCode = async (req, res) => {
             testCase:i+1,
             passed,
             stdout,
+            stdin,
             expected:expected_output,
             stderr:result.stderr || null,
             compile_output: result.compile_output || null,
             status:result.status.description,
-            memory: result.memory ? `${result.memory} KB`:undefined,
-            time:result.time? `${result.time} sec`:undefined
+            memory: parseInt(result.memory) || 0,
+            time:parseFloat(result.time) ||0
         }
         // console.log(`Testcase #${i+1}`)
         // console.log(`Input ${stdin[i]}`)
@@ -58,17 +59,22 @@ export const executeCode = async (req, res) => {
 
        const submission = await db.submission.create({
         data:{
-            userId,
-        problemId,
+        user: {
+            connect: { id: userId } 
+            },
+        problem:{
+            connect:{id: problemId}
+        },
         sourceCode,
         language:getJudge0Language(languageId),
         stdin:stdin.join("\n"),
         stdout:JSON.stringify(detailedResults.map((r)=>r.stdout)),
-        stderr:detailedResults.som((r)=>r.stderr)?JSON.stringify(detailedResults.map((r)=>r.stderr)):null,
-        compiledOutput:detailedResults.som((r)=>r.compile_output)?JSON.stringify(detailedResults.map((r)=>r.compile_output)):null,
+        stderr:detailedResults.map((r)=>r.stderr)?JSON.stringify(detailedResults.map((r)=>r.stderr)):null,
+        compiledOutput:detailedResults.map((r)=>r.compile_output)?JSON.stringify(detailedResults.map((r)=>r.compile_output)):null,
         status:allPassed?"Accepted":"Wrong answer",
-        memory: detailedResults.som((r)=>r.memory)?JSON.stringify(detailedResults.map((r)=>r.memory)):null,
-        time:detailedResults.som((r)=>r.time)?JSON.stringify(detailedResults.map((r)=>r.time)):null,
+        memoryUsed: Math.max(...detailedResults.map((r) => parseInt(r.memory) || 0)), // Parse memory as integer
+        timeTaken: Math.max(...detailedResults.map((r) => parseFloat(r.time) || 0)), // Parse time as float
+
         },
 
        });
@@ -89,11 +95,39 @@ export const executeCode = async (req, res) => {
         })
        }
 
-       
 
+       const testCaseResults = detailedResults.map((result)=>({
+        submissionId: submission.id,
+        testCaseIndex:result.testCase,
+        passed:result.passed,
+        input:JSON.stringify(result.stdin),
+        actualOutput:result.stdout,
+        expectedOutput: result.expected,
+        stderr: result.stderr,
+        compiledOutput: result.compile_output,
+        status:result.status,
+        memoryUsed: result.memory,
+        timeTaken:result.time,
+
+       }))
+
+       await db.testCaseResult.createMany({
+        data:testCaseResults
+       })
+
+
+       const  submissionWithTestCase = await db.submission.findUnique({
+        where:{
+            id:submission.id
+        },
+        include:{
+            testcases:true
+        }
+       })
        res.status(200).json({
         success:true,
         message:"Code executed successfully",
+        submission:submissionWithTestCase
     })
     } catch (error) {
         console.error("Error executing codee:", error);

@@ -18,7 +18,7 @@ export const getJudge0Language=(id)=>{
         63:"JAVASCRIPT"
     }
 
-    return languageMap(id) || "JAVASCRIPT";
+    return languageMap[id] || "JAVASCRIPT";
 }
 
 //axios = easier way to make API calls in JavaScript. More features, better error handling than fetch. unlike fetch, axios automatically converts reponse data to JSON. AND automatically handles headers and cookies.

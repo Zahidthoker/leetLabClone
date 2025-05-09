@@ -32,6 +32,7 @@ model User {
   solvedProblems problemSolved[]
   problem        Problem[]
   submission     Submission[]
+  playlist  Playlist[]
 }
 
 enum Difficulty {
@@ -60,6 +61,7 @@ model Problem {
 
   solvedBy   problemSolved[]
   submission Submission[]
+  problemInPlaylist ProblemInPlaylist[]
   user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -116,6 +118,39 @@ model problemSolved {
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
   @@unique([userId, problemId])
+}
+
+
+model Playlist{
+  id String @id @default(uuid())
+  name String
+  discription String?
+  userId String
+  problems ProblemInPlaylist[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([name, userId])
+
+}
+
+model ProblemInPlaylist{
+  id String @id @default(uuid())
+  playListId String
+  problemId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  playlist Playlist @relation(fields: [playListId], references: [id], onDelete: Cascade)
+
+  problme Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([playListId, problemId])
+
 }
 
 // when complete writing model run the command (npx prisma format)

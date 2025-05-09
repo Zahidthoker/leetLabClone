@@ -1,5 +1,5 @@
 import express from "express"
-import { isAdmin } from "../middleware/auth.middleware.js";
+import { isAdmin, isLoggedIn } from "../middleware/auth.middleware.js";
 import { createProblem, getAllProblems,getProblemById,updateProblem, deleteProblem, getAllProblemsSolvedByUser } from "../controllers/problem.controller.js";
 
 const problemRoutes = express.Router();
@@ -14,5 +14,5 @@ problemRoutes.route('/update-problem/:id').put(isAdmin, updateProblem)
 
 problemRoutes.route('/delete-problem/:id').delete(isAdmin, deleteProblem)
 
-problemRoutes.route('/get-all-problems-solved-by-user').get(getAllProblemsSolvedByUser)
+problemRoutes.route('/get-all-problems-solved-by-user').get(isLoggedIn, getAllProblemsSolvedByUser)
 export default problemRoutes  

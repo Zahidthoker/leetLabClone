@@ -1,10 +1,11 @@
 import express from "express";
 import { isLoggedIn } from "../middleware/auth.middleware.js";
 import { addProblemToPlaylist, createPlaylist, deletePlaylist, getAllPlaylists, getPlaylistDetails, removeProblemFromPlaylist } from "../controllers/playlist.controller.js";
+import { createPlaylistValidator } from "../validator/validator.index.js";
 
 const playlistRoute = express.Router();
 
-playlistRoute.route("/create-playlist").post(isLoggedIn,createPlaylist)
+playlistRoute.route("/create-playlist").post(createPlaylistValidator(),isLoggedIn,createPlaylist)
 
 playlistRoute.route("/:playlistId/add-problem").post(isLoggedIn,addProblemToPlaylist)
 

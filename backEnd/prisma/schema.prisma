@@ -32,7 +32,7 @@ model User {
   solvedProblems problemSolved[]
   problem        Problem[]
   submission     Submission[]
-  playlist  Playlist[]
+  playlist       Playlist[]
 }
 
 enum Difficulty {
@@ -59,10 +59,10 @@ model Problem {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  solvedBy   problemSolved[]
-  submission Submission[]
+  solvedBy          problemSolved[]
+  submission        Submission[]
   problemInPlaylist ProblemInPlaylist[]
-  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Submission {
@@ -120,13 +120,12 @@ model problemSolved {
   @@unique([userId, problemId])
 }
 
-
-model Playlist{
-  id String @id @default(uuid())
-  name String
+model Playlist {
+  id          String              @id @default(uuid())
+  name        String
   discription String?
-  userId String
-  problems ProblemInPlaylist[]
+  userId      String
+  problems    ProblemInPlaylist[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -134,13 +133,12 @@ model Playlist{
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([name, userId])
-
 }
 
-model ProblemInPlaylist{
-  id String @id @default(uuid())
+model ProblemInPlaylist {
+  id         String @id @default(uuid())
   playListId String
-  problemId String
+  problemId  String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -150,7 +148,6 @@ model ProblemInPlaylist{
   problme Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
   @@unique([playListId, problemId])
-
 }
 
 // when complete writing model run the command (npx prisma format)

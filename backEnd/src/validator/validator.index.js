@@ -33,4 +33,13 @@ const userLoginValidator =()=>{
     ]
 }
 
-export {userLoginValidator, userRegisterationValidator}
+const createPlaylistValidator = ()=>{
+    return[
+        body('name')
+        .notEmpty() .withMessage("Please enter the name of playlist")
+        .trim()
+        .isLength({min:5}).withMessage("playlist name must be greater than 5 characters")
+    ]
+}
+
+export {userLoginValidator, userRegisterationValidator, createPlaylistValidator}

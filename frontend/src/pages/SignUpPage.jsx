@@ -2,7 +2,9 @@ import React, {useState} from "react";
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import { Link } from "react-router-dom";
+import axios from "axios";
 import {z as zod} from 'zod';
+import AuthImagePattern from "../components/AuthImagePattern";
 import {
     Code, Eye, EyeOff,
     Mail, User, Loader2, Lock
@@ -11,7 +13,7 @@ import {
 const signUpSchema = zod.object({
     email: zod.string().email("Please enter a valid email address"),
     password: zod.string().min(6,"Password must be at least 6 characters"),
-    username: zod.string().min(3,"Username must be at least 3 characters"),
+    name: zod.string().min(3,"Name must be at least 3 characters"),
 });
 
 const SignUpPage = () => {
@@ -21,9 +23,25 @@ const SignUpPage = () => {
         resolver: zodResolver(signUpSchema)
     });
 
-    const onSubmit = (data) => {
-        console.log(data);
-    };
+    // SignUpPage.jsx
+
+const onSubmit = async (data) => {
+  try {
+    console.log(data)
+    const response = await axios.post(
+      'http://localhost:8080/api/v1/user/register',
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log(response.data);
+  } catch (error) {
+    console.error('Error:', error.response?.data || error.message);
+  }
+};
 
     return (
         <div className="h-screen grid lg:grid-cols-2">
@@ -31,7 +49,7 @@ const SignUpPage = () => {
                 <div className="w-full max-w-sm space-y-8">
                     {/*  Logo here */}
                     <div className="text-center mb-8">
-                        <div className="flex flex-col items-center gap-2 group">
+                        <div className="flex flex-col items-center justify-center gap-2 group">
                             <div className="w-12 h-12 rounded-x1 bg-primary/10 flex items-center justify-center group-hover:bg-primary/20">
                             <Code className="w-6 h-6 text-primary" />
 
@@ -44,6 +62,7 @@ const SignUpPage = () => {
                     </div>
                     {/* Form here  */}
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        {/* username */}
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text font-medium">Name</span>
@@ -52,7 +71,7 @@ const SignUpPage = () => {
                                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                     <Code className="w-5 h-5 text-base-content/40" />                                   
                                 </div>
-                                <input type="text" {...register("username")} placeholder="Username" className={`input input-bordered w-full pl-10 ${errors.name?"input-error":""}`}/>
+                                <input type="text" {...register("name")} placeholder="Full Name" className={`input input-bordered w-full pl-10 ${errors.name?"input-error":""}`}/>
 
                             </div>
                             {errors.name && ( <p className="text-red-500 text-sm mt-1">{errors.name.message}</p> )}
@@ -113,9 +132,17 @@ const SignUpPage = () => {
             </p>
           </div>
         </div>
-      </div>
+            </div>
 
        {/* Right Side - Image/Pattern */}
+
+       <AuthImagePattern
+        
+            title={"Welcome to our platform!"}
+            subtitle={
+            "Sign up to access our platform and start using our services."}
+        
+       />
       
     </div>
   );
